@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9"
+      crossorigin="anonymous"
+    />
+    <title>ToDo-List</title>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">ToDo-List</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="#">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Link</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle"
+                href="#"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                Dropdown
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#">Action</a></li>
+                <li><a class="dropdown-item" href="#">Another action</a></li>
+                <li><hr class="dropdown-divider" /></li>
+                <li>
+                  <a class="dropdown-item" href="#">Something else here</a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link disabled" aria-disabled="true">Disabled</a>
+            </li>
+          </ul>
+          <form class="d-flex" role="search">
+            <input
+              class="form-control me-2"
+              type="search"
+              placeholder="Search"
+              aria-label="Search"
+            />
+            <button class="btn btn-outline-success" type="submit">
+              Search
+            </button>
+          </form>
+        </div>
+      </div>
+    </nav>
+    <div class="container my-4">
+      <h2 class="text-center">ToDo-List</h2>
+
+      <div class="form-group my-2">
+        <label for="title">Title</label>
+        <input
+          type="text"
+          class="form-control"
+          id="title"
+          aria-describedby="emailHelp"
+          placeholder="Today's tasks"
+        />
+        <small id="emailHelp" class="form-text text-muted"
+          >Write Something...</small
+        >
+      </div>
+
+      <div class="form-group my-4">
+        <label for="description"> Description </label>
+        <textarea
+          class="form-control"
+          id="description"
+          rows="3"
+          placeholder="Coding"
+        ></textarea>
+      </div>
+
+      <button type="submit" id="add" class="btn btn-primary my-1">Save</button>
+      <button id="clear" class="btn btn-primary my-1" onclick="clearStorage()">
+        Clear All
+      </button>
+
+      <div id="items" class="my-3">
+        <h2>Your Notes</h2>
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">S.No:</th>
+              <th scope="col">Title</th>
+              <th scope="col">Description</th>
+              <th scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <tr>
+              <th scope="row">1</th>
+              <td>Hello</td>
+              <td>WhatsUp Man</td>
+              <td><button class="btn btn-primary">Delete</button></td>
+            </tr>
+          </tbody>
+        </table>
+        <script>
+          function getAndUpdate() {
+            console.log("Updating List...");
+            ti = document.getElementById("title").value;
+            des = document.getElementById("description").value;
+            if (localStorage.getItem("itemsJson") == null) {
+              itemJsonArray = [];
+              itemJsonArray.push([ti, des]);
+              localStorage.setItem("itemsJson", JSON.stringify(itemJsonArray));
+            } else {
+              itemJsonArrayStr = localStorage.getItem("itemsJson");
+              itemJsonArray = JSON.parse(itemJsonArrayStr);
+              itemJsonArray.push([ti, des]);
+              localStorage.setItem("itemsJson", JSON.stringify(itemJsonArray));
+            }
+            update();
+            
+          }
+          function update() {
+            if (localStorage.getItem("itemsJson") == null) {
+              itemJsonArray = [];
+              localStorage.setItem("itemsJson", JSON.stringify(itemJsonArray));
+            } else {
+              itemJsonArrayStr = localStorage.getItem("itemsJson");
+              itemJsonArray = JSON.parse(itemJsonArrayStr);
+            }
+            let tableBody = document.getElementById("tableBody");
+            let str = "";
+            itemJsonArray.forEach((element, index) => {
+              str += `
+                    <tr>
+                    <th scope="row">${index + 1}</th>
+                    <td>${element[0]}</td>
+                    <td>${element[1]}</td>
+                    <td><button class="btn btn-primary" onclick="deleted(${index})">Delete</button></td>
+                    </tr>`;
+            });
+            tableBody.innerHTML = str;
+          }
+          add = document.getElementById("add");
+          add.addEventListener("click", getAndUpdate);
+          update();
+          function deleted(itemIndex) {
+            if (confirm("Do you really want to delete this file?")) {
+              console.log("Deleting the File...");
+    
+            
+            console.log("Delete", itemIndex);
+            itemJsonArrayStr = localStorage.getItem("itemsJson");
+            itemJsonArray = JSON.parse(itemJsonArrayStr);
+            itemJsonArray.splice(itemIndex, 1);
+            localStorage.setItem("itemsJson", JSON.stringify(itemJsonArray));
+            update();
+            }
+          }
+          function clearStorage() {
+            if (confirm("Do you really want to clear the storage?")) {
+              console.log("Clearing the storage...");
+              localStorage.clear();
+              update();
+            }
+          }
+//           const form = document.getElementById('form-group');
+
+// form.addEventListener('add', function handleSubmit(event) {
+//   event.preventDefault();
+
+//   form.reset();
+// });
+
+        </script>
+      </div>
+    </div>
+  </body>
+</html>
